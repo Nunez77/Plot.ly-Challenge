@@ -34,3 +34,19 @@ var chartData = null;
 let chosenXAxis = "Poverty";
 let chosenYAxis = "Healthcare";
 
+var xAxisLabels = ["Poverty", "Age", "Income"];  // Default 
+var yAxisLabels = ["Obesity", "Smokes", "Healthcare"];
+var labelsTitle = { "Poverty": "In Poverty (%)", 
+                    "Age": "Age (Median)", 
+                    "Income": "Household Income (Median)",
+                    "Obesity": "Obese (%)", 
+                    "Smokes": "Smokes (%)", 
+                    "Healthcare": "Lacks Healthcare (%)" };
+
+function xScale(healthData,chosenXAxis){
+  var xLinearScale = d3.scaleLinear()
+      .domain([d3.min(healthData, d=>d[chosenXAxis])*0.9, d3.max(healthData,d=>d[chosenXAxis])*1.1])
+      .range([0,width])
+  return xLinearScale;
+
+}
