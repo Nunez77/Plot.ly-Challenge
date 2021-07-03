@@ -30,18 +30,18 @@ const chartGroup = svg.append("g")
 // Empty values
 var chartData = null;
 
-// Set up axes
+// Set up axes and initial parameters
 let chosenXAxis = "Poverty";
 let chosenYAxis = "Healthcare";
 
 var xAxisLabels = ["Poverty", "Age", "Income"];  // Default 
 var yAxisLabels = ["Obesity", "Smokes", "Healthcare"];
-var labelsTitle = { "Poverty": "In Poverty (%)", 
-                    "Age": "Age (Median)", 
-                    "Income": "Household Income (Median)",
-                    "Obesity": "Obese (%)", 
-                    "Smokes": "Smokes (%)", 
-                    "Healthcare": "Lacks Healthcare (%)" };
+var labelsTitle = { "poverty": "In Poverty (%)", 
+                    "age": "Age (Median)", 
+                    "income": "Household Income (Median)",
+                    "obesity": "Obese (%)", 
+                    "smokes": "Smokes (%)", 
+                    "healthcare": "Lacks Healthcare (%)" };
 
 function xScale(healthData,chosenXAxis){
   var xLinearScale = d3.scaleLinear()
@@ -50,3 +50,23 @@ function xScale(healthData,chosenXAxis){
   return xLinearScale;
 
 }
+
+function yScale(healthData, chosenYAxis) {
+    // Create Scales.
+    var yLinearScale = d3.scaleLinear()
+        .domain([d3.min(healthData, d => d[chosenYAxis]) * .9,d3.max(healthData, d => d[chosenYAxis]) * 1.1 ])
+        .range([height, 0]);
+  
+    return yLinearScale;
+  }
+
+// Update x-axis function
+function renderXAxes(newXScale, xAxis) {
+    var bottomAxis = d3.axisBottom(newXScale);
+  
+    xAxis.transition()
+          .duration(1000)
+          .call(bottomAxis);
+  
+    return xAxis;
+  }
