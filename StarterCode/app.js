@@ -159,7 +159,7 @@ return circlesGroup;
 
 
 // Import Data
-d3.csv("/assets/data/data.csv").then(function(healthData) {
+d3.json("samples.json").then(function(healthData) {
 
     // Step 1: Parse Data/Cast as numbers
     // ==============================
