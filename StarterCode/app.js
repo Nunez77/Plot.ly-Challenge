@@ -106,29 +106,29 @@ function renderText(circletextGroup, newXScale, newYScale, chosenXAxis, chosenYA
 function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
   // Selection of X axis
   if (chosenXAxis === "poverty") {
-      var xlabel = "Poverty";
+    var xlabel = "Poverty";
   }
   else if (chosenXAxis === "age") {
-      var xlabel = "Age"
+    var xlabel = "Age"
   }
   else {
-      var xlabel = "Median Income"
+    var xlabel = "Median Income"
   }
   // Selection of Y axis
-  if (chosenYAxis === "healthcare") {
-      var ylabel = "Available Healthcare";
+  if (chosenYAxis === "smokes") {
+    var ylabel = "Smokers"
   }
-  else if (chosenYAxis === "smokes") {
-      var ylabel = "Smokers"
+  else if (chosenYAxis === "healthcare") {
+    var ylabel = "Available Healthcare";
   }
   else {
-      var ylabel = "Obesity"
+    var ylabel = "Obesity"
   }
 
   var toolTip = d3.tip()
   .attr("class", "tooltip")
   .style("background", "black")
-  .style("color", "white")
+  .style("color", "gray")
   .offset([120, -60])
   .html(function(d) {
       if (chosenXAxis === "age") {
