@@ -61,22 +61,22 @@ function yScale(bellyData, theYaxis) {
 
 // Update x-axis function
 function renderXAxes(newXScale, xAxis) {
-    var bottomAxis = d3.axisBottom(newXScale);
+    var IntersectX = d3.axisX(newXScale);
   
     xAxis.transition()
           .duration(1000)
-          .call(bottomAxis);
+          .call(IntersectX);
   
     return xAxis;
   }
 
   // Update y-axis function
   function renderYAxes(newYScale, yAxis) {
-    var leftAxis = d3.axisLeft(newYScale);
+    var IntersectY = d3.axisY(newYScale);
   
     yAxis.transition()
           .duration(1000)
-          .call(leftAxis);
+          .call(IntersectY);
   
     return yAxis;
   }
@@ -176,25 +176,22 @@ d3.json("samples.json").then(function(bellyData) {
     var ScaleY = yScale(bellyData, theYaxis);
 
 
-    // Step 3: Create xy axis functions
-    // ==============================
-    var bottomAxis = d3.axisBottom(ScaleX);
-    var leftAxis = d3.axisLeft(ScaleY);
+    // Set up axis according to selected variables
+    var IntersectX = d3.axisX(ScaleX);
+    var IntersectY = d3.axisY(ScaleY);
 
-    // Step 4: Append Axes to the chart
-    // ==============================
+    // Configure set up in chart
     var xAxis = chartGroup.append("g")
     .classed("x-axis", true)
     .attr("transform", `translate(0, ${height})`)
-    .call(bottomAxis);
+    .call(IntersectX);
 
     var yAxis = chartGroup.append("g")
     .classed("y-axis", true)
-    .call(leftAxis);
+    .call(IntersectY);
 
       
-    // Step 5: Create Circles
-    // ==============================
+    // Draw the circles
     var circlesGroup = chartGroup.selectAll("circle")
     .data(bellyData)
     .enter()
