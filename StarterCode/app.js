@@ -144,12 +144,11 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
         }      
   });
 
+  // Configure mousein and mouseout
   circlesGroup.call(toolTip);
-  //mouseon event
-  circlesGroup.on("mouseover", function(data) {
+  circlesGroup.on("mousein", function(data) {
     toolTip.show(data, this);
   })
-  //mouseout event
    .on("mouseout", function(data,index) {
     toolTip.hide(data)
   });
