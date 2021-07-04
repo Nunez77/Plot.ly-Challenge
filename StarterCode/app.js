@@ -132,14 +132,14 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
   .offset([120, -60])
   .html(function(d) {
       if (chosenXAxis === "age") {
-          // All yAxis tooltip labels presented and formated as %.
-          // Display Age without format for xAxis.
+          // Y Axis will be a %
           return (`${d.state}<hr>${xlabel} ${d[chosenXAxis]}<br>${ylabel}${d[chosenYAxis]}%`);
+          // Y Axis no format
         } else if (chosenXAxis !== "poverty" && chosenXAxis !== "age") {
-          // Display Income in dollars for xAxis.
+          // X Axis in %
           return (`${d.state}<hr>${xlabel}$${d[chosenXAxis]}<br>${ylabel}${d[chosenYAxis]}%`);
         } else {
-          // Display Poverty as percentage for xAxis.
+          // Same here
           return (`${d.state}<hr>${xlabel}${d[chosenXAxis]}%<br>${ylabel}${d[chosenYAxis]}%`);
         }      
   });
