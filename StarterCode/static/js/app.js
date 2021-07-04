@@ -5,361 +5,307 @@
 // Use otu_labels as the hovertext for the chart.
 
 
-// Setup frame
-const svgWidth = 960;
-const svgHeight = 500;
-const margin = {
-  top: 20,
-  right: 40,
-  bottom: 80,
-  left: 100
+// Read data from file
+d3.json("samples.json").then((data) => {
+
+    // Initialize arrays
+    var values = [];
+    var otu_ids = [];
+    var otu_labels = [];
+    var ids = [];
+
+    // Sort the samples dataset by sample values
+    var sortedValues = data.samples.sort((a,b) => b.sample_values - a.sample_values);
+    console.log(sortedValues);
+
+    // Slice the samples dataset into the top 10 values
+    var slicedData = sortedValues.slice(0,10);
+    console.log(slicedData);
+
+    // IDS: EACH PERSON
+    // Create two arrays for ids
+    ids = sortedValues.map(d => d.id);
+    console.log("---IDs---");
+    console.log(ids);
+
+    // SAMPLE VALUES: EACH SAMPLE
+    // Create two arrays for values
+    values = sortedValues.map(d => d.sample_values);
+    top_10_values = sortedValues.map(d => d.sample_values.slice(0,10).reverse());
+    console.log("---TOP 10 Values---");
+    console.log(top_10_values[0]);
+
+    // OTU IDS: EACH SAMPLE
+    // Create two arrays for otu ids
+    otu_ids = sortedValues.map(d => d.otu_ids);
+    top_10_otu_ids = sortedValues.map(d => d.otu_ids.slice(0,10).reverse());
+    console.log("---TOP 10 OTU IDs---");
+    console.log(top_10_otu_ids[0]);
+
+    // Initialize the string array for otu ids
+    var string_otu_ids = [];
+    
+    // Function to convert numbers to string 
+    function convertToString(x) {
+        return `OTU ${String(x)}`;
+    }
+
+    // Loop through to convert int ids to strings (with OTU at beginning)
+    for (var i = 0; i < top_10_otu_ids.length; i++) {
+        string_otu_ids[i] = top_10_otu_ids[i].map(convertToString);
+    };
+
+    // STRING OTU IDS: EACH SAMPLE
+    // Check string OTU ID array
+    console.log("---TOP 10 String OTU IDs---");
+    console.log(string_otu_ids[0]);
+
+    // OTU LABELS: EACH SAMPLE
+    // Create two arrays for otu labels
+    otu_labels = sortedValues.map(d => d.otu_labels);
+    top_10_otu_labels = sortedValues.map(d => d.otu_labels.slice(0,10).reverse());
+    console.log("---TOP 10 OTU Labels---");
+    console.log(top_10_otu_labels[0]);
+
+    // METADATA DEMOGRAPHICS
+    // Bring in the metadata object
+    var metadata = data.metadata;
+    // console.log(metadata);
+
+    // Define the id array
+    var individual_id = metadata.map(d => d.id);
+    // console.log(individual_id);
+
+    // Define the ethnicity array
+    var ethnicity = metadata.map(d => d.ethnicity);
+    // console.log(ethnicity);
+
+    // Define the gender array
+    var gender = metadata.map(d => d.gender);
+    // console.log(gender);
+
+    // Define the age array
+    var age = metadata.map(d => d.age);
+    // console.log(age);
+
+    // Define the location array
+    var location = metadata.map(d => d.location);
+    // console.log(location);
+    
+    // Define the bbtype array
+    var bbtype = metadata.map(d => d.bbtype);
+    // console.log(bbtype);
+
+    // Define the wfreq array
+    var wfreq = metadata.map(d => d.wfreq);
+    // console.log(wfreq);
+
+    // DEMOGRAPHIC CARD
+    // Select the card location
+    card_list = d3.select("#list-group");
+    
+    // Append a list option with each demographic value
+    card_list.append("li").text(`ID: ${individual_id[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Ethnicity: ${ethnicity[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Gender: ${gender[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Age: ${age[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Location: ${location[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Bellybutton Type: ${bbtype[0]}`).attr("class", "list-group-item");
+    card_list.append("li").text(`Wash Frequency: ${wfreq[0]}`).attr("class", "list-group-item");
+
+    // Initialize the graph when loaded with default data
+    function init() {
+    
+        
+        // Bar Plot trace
+        var trace1 = [{
+            x: top_10_values[0],
+            y: string_otu_ids[0],
+            hovertext: top_10_otu_labels[0],
+            type: "bar",
+            orientation: "h",
+            ids: string_otu_ids[0],
+            marker: { color: `rgb(78, 116, 125)` }
+        }];
+
+        // Bar Plot layout
+        var layout1 = {
+            title: "Top 10 OTUs Found in Test Subject",
+            xaxis: {
+                title: "Sample Values"
+            },
+            yaxis: {
+                // title: "OTU IDs",
+                type: "category"
+            }
+        };
+
+        // Bubble Plot trace
+        var trace2 = [{
+            x: otu_ids[0],
+            y: values[0],
+            hovertext: otu_labels[0],
+            mode: 'markers',
+            marker: {
+                color: otu_ids[0],
+                size: values[0]
+            }
+        }];
+        
+        // Bubble plot layout
+        var layout2 = {
+            title: "Number of OTUs per Sample",
+            showlegend: false,
+            // height: 600,
+            // width: 1200,
+            xaxis: {
+                title: "OTU ID"
+            },
+            yaxis: {
+                title: "Sample Values",
+                //type: "category"
+            }
+        };
+        
+        // Indicator Plot trace
+        var trace3 = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: wfreq[0],
+                title: "Wash Frequency<br><span style='font-size:0.8em;color:gray'>Number of Bellybutton Scrubs<br>per Week</span>", // { text: "Washing Frequency" },
+                type: "indicator",
+                mode: "gauge+number",
+                // delta: { reference: 3 },
+                gauge: {
+                    bar: { color: '#518290'},  
+                    axis: { range: [0, 9] },
+                    steps: [
+                        { range: [0, 1], color: '#F2F7F8'},
+                        { range: [1, 2], color: '#E5EEF0'},
+                        { range: [2, 3], color: '#D8E6E9'},
+                        { range: [3, 4], color: '#CBDDE2'},
+                        { range: [4, 5], color: '#BED5DA'},
+                        { range: [5, 6], color: '#B1CCD3'},
+                        { range: [6, 7], color: '#9BBEC7'},
+                        { range: [7, 8], color: '#89B3BD'},
+                        { range: [8, 9], color: '#7CAAB6'}
+                    
+                    ],
+                    threshold: {
+                        line: { color: "#33535B" , width: 4 }, //'rgb(239, 203, 104)'
+                        thickness: 0.75,
+                        value: wfreq[0]
+                    }
+                }
+            }
+        ];
+        
+        // Indicator Layout
+        var layout3 = { margin: { t: 100, b: 100 } };
+        // var layout3 = { width: 500, height: 300, margin: { t: 0, b: 0 } };
+
+        var config = { responsive: true };
+        
+        // Define where the plots will live
+        var bar_plot = d3.selectAll("#bar-plot").node();
+        var bubble_plot = d3.selectAll("#bubble-plot").node();
+        var indicator_plot = d3.selectAll("#indicator-plot").node();
+
+        // Plot the plots
+        Plotly.newPlot(bar_plot, trace1, layout1, config);
+        Plotly.newPlot(bubble_plot, trace2, layout2, config);
+        Plotly.newPlot(indicator_plot, trace3, layout3, config);
+    
+    };
+
+    // DROPDOWN MENU
+    // Select the dropdown menu
+    var dropdownMenu = d3.select("#dropdown-menu>#selID");
+    
+    // Loop through ids and create options in dropdown menu
+    for (var x = 0; x < ids.length; x++) {
+        var option = dropdownMenu.append("option");
+        option.text(ids[x]).attr("value", `${ids[x]}`);
+    };
+
+    // When the page is changed, update the plot
+    d3.selectAll("select").on("change", updatePlotly);
+
+    
+
+// Function when a dropdown option is chosen
+function updatePlotly() {
+    var dataset = dropdownMenu.node().value;
+    console.log(dataset);
+
+    // Loop through ids to create cases (when each dataset is chosen)
+    for (var i = 0; i < ids.length; i++) {
+        switch(dataset) {
+            case ids[i]:
+                // Variables to change for Bar Plot
+                x = top_10_values[i];
+                y = string_otu_ids[i];
+                text = top_10_otu_labels[i];
+
+                // Variables to change for Bubble Plot
+                x2 = otu_ids[i];
+                y2 = values[i];
+                text2 = otu_labels[i];
+
+                // Variables to change for Indicator Plot
+                value = wfreq[i];
+                break;
+        };
+    };
+
+    // Loop through to change the demographic card
+    for (var i = 0; i < individual_id.length; i++) {
+        // if the dataset chosen is equal to the ID
+        if (dataset == individual_id[i]) {
+            // Set the ID iteration to a variable
+            var thisID = i;
+
+        // DEMOGRAPHIC CARD
+        // Select the card location
+        card_list = d3.select("#list-group");
+
+        // Clear the demograhic card
+        card_list.html("");
+        
+        // Append a list option with each demographic value
+        card_list.append("li").text(`ID: ${individual_id[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Ethnicity: ${ethnicity[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Gender: ${gender[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Age: ${age[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Location: ${location[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Bellybutton Type: ${bbtype[thisID]}`).attr("class", "list-group-item");
+        card_list.append("li").text(`Wash Frequency: ${wfreq[thisID]}`).attr("class", "list-group-item");
+        };
+    
+    };
+
+    // Select the location of each plot
+    var bar_plot = d3.selectAll("#bar-plot").node();
+    var bubble_plot = d3.selectAll("#bubble-plot").node();
+    var indicator_plot = d3.selectAll("#indicator-plot").node();
+
+    // Restyle the bar plot with new data
+    Plotly.restyle(bar_plot, "x", [x]);
+    Plotly.restyle(bar_plot, "y", [y]);
+    Plotly.restyle(bar_plot, "hovertext", [text]);
+
+    // Restyle the bubble plot with new data
+    Plotly.restyle(bubble_plot, "x", [x2]);
+    Plotly.restyle(bubble_plot, "y", [y2]);
+    Plotly.restyle(bubble_plot, "hovertext", [text2]);
+
+    // Restyle the indicator plot with new data
+    Plotly.restyle(indicator_plot, "value", [value]);
+    Plotly.restyle(indicator_plot, "gauge.threshold.value", [value]);
+
 };
-const width = svgWidth - margin.left - margin.right;
-const height = svgHeight - margin.top - margin.bottom;
 
-// Create SVG wrapper
-var svg = d3.select("#scatter")
-  .append("svg")
-  .attr("width", svgWidth)
-  .attr("height", svgHeight);
+// Call the default plot
+init();
 
-  // Append SVG group
-const chartGroup = svg.append("g")
-.attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-// Empty values
-var chartData = null;
-
-// Set up axes and initial parameters
-let theXaxis = "Poverty";
-let theYaxis = "Healthcare";
-
-var xAxisLabels = ["Poverty", "Age", "Income"];  // Default 
-var yAxisLabels = ["Obesity", "Smokes", "Healthcare"];
-var labelsTitle = { "poverty": "In Poverty (%)", 
-                    "age": "Age (Median)", 
-                    "income": "Household Income (Median)",
-                    "obesity": "Obese (%)", 
-                    "smokes": "Smokes (%)", 
-                    "healthcare": "Lacks Healthcare (%)" };
-
-// Create Scales.
-function xScale(bellyData,theXaxis){
-  var ScaleX = d3.scaleLinear()
-      .domain([d3.min(bellyData, d=>d[theXaxis])*0.9, d3.max(bellyData,d=>d[theXaxis])*1.1])
-      .range([0,width])
-  return ScaleX;
-}
-
-function yScale(bellyData, theYaxis) {
-    var ScaleY = d3.scaleLinear()
-        .domain([d3.min(bellyData, d => d[theYaxis]) * .9,d3.max(bellyData, d => d[theYaxis]) * 1.1 ])
-        .range([height, 0]);
-  
-    return ScaleY;
-  }
-
-// Update x-axis function
-function renderXAxes(newXScale, xAxis) {
-    var IntersectX = d3.axisX(newXScale);
-  
-    xAxis.transition()
-          .duration(1000)
-          .call(IntersectX);
-  
-    return xAxis;
-  }
-
-  // Update y-axis function
-  function renderYAxes(newYScale, yAxis) {
-    var IntersectY = d3.axisY(newYScale);
-  
-    yAxis.transition()
-          .duration(1000)
-          .call(IntersectY);
-  
-    return yAxis;
-  }
-
-  // Updating circles function
-  function renderCircles(circlesGroup, newXScale, newYScale, theXaxis, theYaxis) {
-
-    circlesGroup.transition()
-      .duration(1000)
-      .attr("cx", d => newXScale(d[theXaxis]))
-      .attr("cy", d => newYScale(d[theYaxis]));
-  
-    return circlesGroup;
-  }
-
-  // New text transition function
-function renderText(circletextGroup, newXScale, newYScale, theXaxis, theYaxis) {
-  circletextGroup.transition()
-    .duration(1000)
-    .attr("x", d => newXScale(d[theXaxis]))
-    .attr("y", d => newYScale(d[theYaxis]));
-      
-  return circletextGroup;
-}
-
-// Tooltip update function
-function updateToolTip(theXaxis, theYaxis, circlesGroup) {
-  // Selection of X axis
-  if (theXaxis === "poverty") {
-    var xlabel = "Poverty";
-  }
-  else if (theXaxis === "age") {
-    var xlabel = "Age"
-  }
-  else {
-    var xlabel = "Median Income"
-  }
-  // Selection of Y axis
-  if (theYaxis === "smokes") {
-    var ylabel = "Smokers"
-  }
-  else if (theYaxis === "healthcare") {
-    var ylabel = "Available Healthcare";
-  }
-  else {
-    var ylabel = "Obesity"
-  }
-
-  var toolTip = d3.tip()
-  .attr("class", "tooltip")
-  .style("background", "black")
-  .style("color", "gray")
-  .offset([120, -60])
-  .html(function(d) {
-      if (theXaxis === "age") {
-          // Y Axis will be a %
-          return (`${d.state}<hr>${xlabel} ${d[theXaxis]}<br>${ylabel}${d[theYaxis]}%`);
-          // Y Axis no format
-        } else if (theXaxis !== "poverty" && theXaxis !== "age") {
-          // X Axis in %
-          return (`${d.state}<hr>${xlabel}$${d[theXaxis]}<br>${ylabel}${d[theYaxis]}%`);
-        } else {
-          // Same here
-          return (`${d.state}<hr>${xlabel}${d[theXaxis]}%<br>${ylabel}${d[theYaxis]}%`);
-        }      
-  });
-
-  circlesGroup.call(toolTip);
-  // When mouse on
-  circlesGroup.on("mouseon", function(data) {
-    toolTip.show(data, this);
-  })
-  // When mouse out
-   .on("mouseout", function(data,index) {
-    toolTip.hide(data)
-  });
-
-return circlesGroup;
-}
-
-
-// Import Data
-d3.json("samples.json").then(function(bellyData) {
-
-    // Sum up frequency of attributes
-    bellyData.forEach(function(data) {
-      data.poverty = +data.poverty;
-      data.healthcare = +data.healthcare;
-      data.age = +data.age;
-      data.income = +data.income;
-      data.smokes = +data.smokes;
-      data.obesity = +data.obesity;
-    });
-
-    // Set up scale according to selected variables
-    var ScaleX = xScale(bellyData, theXaxis);
-    var ScaleY = yScale(bellyData, theYaxis);
-
-
-    // Set up axis according to selected variables
-    var IntersectX = d3.axisX(ScaleX);
-    var IntersectY = d3.axisY(ScaleY);
-
-    // Configure set up in chart
-    var xAxis = chartGroup.append("g")
-    .classed("x-axis", true)
-    .attr("transform", `translate(0, ${height})`)
-    .call(IntersectX);
-
-    var yAxis = chartGroup.append("g")
-    .classed("y-axis", true)
-    .call(IntersectY);
-
-      
-    // Draw the circles
-    var circlesGroup = chartGroup.selectAll("circle")
-    .data(bellyData)
-    .enter()
-    .append("circle")
-    .attr("cx", d => ScaleX(d[theXaxis]))
-    .attr("cy", d => ScaleY(d[theYaxis]))
-    .attr("r", "15")
-    .attr("fill", "blue")
-    .attr("opacity", ".5");
-
-    // Identify circles
-    var circletextGroup = chartGroup.selectAll()
-    .data(bellyData)
-    .enter()
-    .append("text")
-    .text(d => (d.abbr))
-    .attr("x", d => ScaleX(d[theXaxis]))
-    .attr("y", d => ScaleY(d[theYaxis]))
-    .style("font-size", "9px")
-    .style("text-anchor", "middle")
-    .style('fill', 'black');
-
-    var labelsGroup = chartGroup.append("g")
-    .attr("transform", `translate(${width / 2}, ${height + 20})`);
-
-    var povertyLabel = labelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("value", "poverty")
-        .classed("active", true)
-        .text("In Poverty (%)");
-    
-    var healthcareLabel = labelsGroup.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", (margin.left) * 2.8)
-        .attr("y", 0 - (height+12))
-        .attr("value", "healthcare")
-        .classed("active", true)
-        .text("Lacks Healthcare (%)");
-
-    var ageLabel = labelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 20)
-        .attr("value", "age")
-        .classed("inactive", true)
-        .text("Age (Median)");
-
-    var smokeLabel = labelsGroup.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", (margin.left) * 2.8)
-        .attr("y", 0 - (height +32))
-        .attr("value", "smokes")
-        .classed("inactive", true)
-        .text("Smokes (%)");
-
-    var incomeLabel = labelsGroup.append("text")
-        .attr("x", 0)
-        .attr("y", 40)
-        .attr("value", "income")
-        .classed("inactive", true)
-        .text("Household Income (Median)");
-
-    var obesityLabel = labelsGroup.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", (margin.left) * 2.8)
-        .attr("y", 0 - (height +52))
-        .attr("value", "obesity")
-        .classed("inactive", true)
-        .text("Obesity (%)");
-
-    // Update tool tip function
-    var circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
-
-    // When on x axis event listener: bring value
-    labelsGroup.selectAll("text")
-        .on("click", function() {
-          var value = d3.select(this).attr("value");
-          console.log(value)
-
-          if (true) {
-              if (value === "poverty" || value === "age" || value === "income") {
-                theXaxis = value;  // Assigns selection
-                ScaleX = xScale(bellyData, theXaxis);  // Updates scale
-                xAxis = renderXAxes(ScaleX, xAxis);  // Updates axis
-                circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis); // Updates circles
-                circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup); // Updates tooltips
-                circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis); // Updates values
-
-                // Formats text depending on selection
-                if (theXaxis === "poverty") {
-                    povertyLabel
-                        .classed("active", true)
-                        .classed("inactive", false);
-                    ageLabel
-                        .classed("active", false)
-                        .classed("inactive", true);
-                    incomeLabel
-                        .classed("active", false)
-                        .classed("inactive", true);
-                }
-                else if (theXaxis === "age"){
-                    povertyLabel
-                        .classed("active", false)
-                        .classed("inactive", true);
-                    ageLabel
-                        .classed("active", true)
-                        .classed("inactive", false);
-                    incomeLabel
-                        .classed("active", false)
-                        .classed("inactive", true);
-                }
-                else {
-                    povertyLabel
-                        .classed("active", false)
-                        .classed("inactive", true);
-                    ageLabel
-                        .classed("active", false)
-                        .classed("inactive", true)
-                    incomeLabel
-                        .classed("active", true)
-                        .classed("inactive", false);
-                }}
-
-            else {
-              theYaxis = value;
-              ScaleY = yScale(bellyData, theYaxis);
-              yAxis = renderYAxes(ScaleY, yAxis);
-              circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-              circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
-              circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-
-                // Text formatting
-                if (theYaxis === "healthcare") {
-                        healthcareLabel
-                            .classed("active", true)
-                            .classed("inactive", false);
-                        smokeLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                        obesityLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                          }
-                    else if (theYaxis === "smokes"){
-                        healthcareLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                        smokeLabel
-                            .classed("active", true)
-                            .classed("inactive", false);
-                        obesityLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                          }
-                    else {
-                        healthcareLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                        smokeLabel
-                            .classed("active", false)
-                            .classed("inactive", true);
-                        obesityLabel
-                            .classed("active", true)
-                            .classed("inactive", false);
-                        }
-                   } 
-                  }
-                
-          });
-    
-    });
+});
