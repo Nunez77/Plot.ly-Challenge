@@ -199,10 +199,10 @@ d3.json("samples.json").then(function(bellyData) {
     .attr("cx", d => ScaleX(d[theXaxis]))
     .attr("cy", d => ScaleY(d[theYaxis]))
     .attr("r", "15")
-    .attr("fill", "pink")
+    .attr("fill", "blue")
     .attr("opacity", ".5");
 
-    // Add State abbr. text to circles. and some offset to y
+    // Identify circles
     var circletextGroup = chartGroup.selectAll()
     .data(bellyData)
     .enter()
@@ -210,7 +210,7 @@ d3.json("samples.json").then(function(bellyData) {
     .text(d => (d.abbr))
     .attr("x", d => ScaleX(d[theXaxis]))
     .attr("y", d => ScaleY(d[theYaxis]))
-    .style("font-size", "11px")
+    .style("font-size", "9px")
     .style("text-anchor", "middle")
     .style('fill', 'black');
 
@@ -220,7 +220,7 @@ d3.json("samples.json").then(function(bellyData) {
     var povertyLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("value", "poverty") // value to grab for event listener.
+        .attr("value", "poverty")
         .classed("active", true)
         .text("In Poverty (%)");
     
@@ -228,14 +228,14 @@ d3.json("samples.json").then(function(bellyData) {
         .attr("transform", "rotate(-90)")
         .attr("x", (margin.left) * 2.8)
         .attr("y", 0 - (height+12))
-        .attr("value", "healthcare") // value to grab for event listener.
+        .attr("value", "healthcare")
         .classed("active", true)
         .text("Lacks Healthcare (%)");
 
     var ageLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 20)
-        .attr("value", "age") // value to grab for event listener.
+        .attr("value", "age")
         .classed("inactive", true)
         .text("Age (Median)");
 
@@ -243,14 +243,14 @@ d3.json("samples.json").then(function(bellyData) {
         .attr("transform", "rotate(-90)")
         .attr("x", (margin.left) * 2.8)
         .attr("y", 0 - (height +32))
-        .attr("value", "smokes") // value to grab for event listener.
+        .attr("value", "smokes")
         .classed("inactive", true)
         .text("Smokes (%)");
 
     var incomeLabel = labelsGroup.append("text")
         .attr("x", 0)
         .attr("y", 40)
-        .attr("value", "income") // value to grab for event listener.
+        .attr("value", "income")
         .classed("inactive", true)
         .text("Household Income (Median)");
 
@@ -258,37 +258,26 @@ d3.json("samples.json").then(function(bellyData) {
         .attr("transform", "rotate(-90)")
         .attr("x", (margin.left) * 2.8)
         .attr("y", 0 - (height +52))
-        .attr("value", "obesity") // value to grab for event listener.
+        .attr("value", "obesity")
         .classed("inactive", true)
         .text("Obesity (%)");
 
-    // Update tool tip function above csv import.
+    // Update tool tip function
     var circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
 
-    // X Axis labels event listener.
+    // When on x axis event listener: bring value
     labelsGroup.selectAll("text")
         .on("click", function() {
-        // Get value of selection.
           var value = d3.select(this).attr("value");
           console.log(value)
 
-        //if select x axises
           if (true) {
               if (value === "poverty" || value === "age" || value === "income") {
-                // Replaces theXaxis with value.
-                theXaxis = value;
-
-                // Update x scale for new data.
-                ScaleX = xScale(bellyData, theXaxis);
-
-                // Updates x axis with transition.
-                xAxis = renderXAxes(ScaleX, xAxis);
-
-                // Update circles with new x values.
-                circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-
-                // Update tool tips with new info.
-                circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
+                theXaxis = value;  // Assigns selection
+                ScaleX = xScale(bellyData, theXaxis);  // Updates scale
+                xAxis = renderXAxes(ScaleX, xAxis);  // Updates axis
+                circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis); // Updates circles
+                circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup); // Updates tooltips
 
                 // Update circles text with new values.
                 circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis);
