@@ -278,20 +278,16 @@ d3.json("samples.json").then(function(bellyData) {
                 xAxis = renderXAxes(ScaleX, xAxis);  // Updates axis
                 circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis); // Updates circles
                 circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup); // Updates tooltips
+                circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis); // Updates values
 
-                // Update circles text with new values.
-                circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-
-                // Changes classes to change bold text.
+                // Formats text depending on selection
                 if (theXaxis === "poverty") {
                     povertyLabel
                         .classed("active", true)
                         .classed("inactive", false);
-
                     ageLabel
                         .classed("active", false)
                         .classed("inactive", true);
-                    
                     incomeLabel
                         .classed("active", false)
                         .classed("inactive", true);
@@ -300,11 +296,9 @@ d3.json("samples.json").then(function(bellyData) {
                     povertyLabel
                         .classed("active", false)
                         .classed("inactive", true);
-
                     ageLabel
                         .classed("active", true)
                         .classed("inactive", false);
-
                     incomeLabel
                         .classed("active", false)
                         .classed("inactive", true);
@@ -313,47 +307,30 @@ d3.json("samples.json").then(function(bellyData) {
                     povertyLabel
                         .classed("active", false)
                         .classed("inactive", true);
-
                     ageLabel
                         .classed("active", false)
                         .classed("inactive", true)
-
                     incomeLabel
                         .classed("active", true)
                         .classed("inactive", false);
                 }}
 
-           else {
-                    theYaxis = value;
-                    //console.log("you choosed y axis")
-              
-                    // Update y scale for new data.
-                    ScaleY = yScale(bellyData, theYaxis);
+            else {
+              theYaxis = value;
+              ScaleY = yScale(bellyData, theYaxis);
+              yAxis = renderYAxes(ScaleY, yAxis);
+              circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis);
+              circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
+              circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis);
 
-                    // Updates y axis with transition.
-                    yAxis = renderYAxes(ScaleY, yAxis);
-
-                    // Update circles with new x values.
-                    circlesGroup = renderCircles(circlesGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-
-                    // Update tool tips with new info.
-                    circlesGroup = updateToolTip(theXaxis, theYaxis, circlesGroup);
-
-                    // Update circles text with new values.
-                    circletextGroup = renderText(circletextGroup, ScaleX, ScaleY, theXaxis, theYaxis);
-
-                    // Changes classes to change bold text.
-                    if (theYaxis === "healthcare") {
-
+                // Text formatting
+                if (theYaxis === "healthcare") {
                         healthcareLabel
                             .classed("active", true)
                             .classed("inactive", false);
-
-
                         smokeLabel
                             .classed("active", false)
                             .classed("inactive", true);
-
                         obesityLabel
                             .classed("active", false)
                             .classed("inactive", true);
@@ -362,11 +339,9 @@ d3.json("samples.json").then(function(bellyData) {
                         healthcareLabel
                             .classed("active", false)
                             .classed("inactive", true);
-
                         smokeLabel
                             .classed("active", true)
                             .classed("inactive", false);
-
                         obesityLabel
                             .classed("active", false)
                             .classed("inactive", true);
@@ -375,11 +350,9 @@ d3.json("samples.json").then(function(bellyData) {
                         healthcareLabel
                             .classed("active", false)
                             .classed("inactive", true);
-
                         smokeLabel
                             .classed("active", false)
                             .classed("inactive", true);
-
                         obesityLabel
                             .classed("active", true)
                             .classed("inactive", false);
