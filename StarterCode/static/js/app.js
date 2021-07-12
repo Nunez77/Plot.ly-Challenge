@@ -59,65 +59,60 @@ function getPlots(id) {
     
             };
     
-            // set the layout for the bubble plot
+            // Setting bubble plot layout
             var layout_2 = {
                 xaxis:{title: "OTU ID"},
                 height: 600,
                 width: 1000
             };
     
-            // creating data variable 
+            // Create the data variable. 
             var data1 = [trace1];
     
-        // create the bubble plot
+        // Create the bubble plot.
         Plotly.newPlot("bubble", data1, layout_2); 
         
         });
     }  
-    // create the function to get the necessary data
+    // Create function that will bring back required data.
     function getDemoInfo(id) {
-    // read the json file to get data
+    // Read the data file.
         d3.json("samples.json").then((data)=> {
-    // get the metadata info for the demographic panel
+    // Grab metadata
             var metadata = data.metadata;
-    
             console.log(metadata)
-    
-          // filter meta data info by id
+          // Filter metadata by id
            var result = metadata.filter(meta => meta.id.toString() === id)[0];
-          // select demographic panel to put data
+          // Select demographic panel
            var demographicInfo = d3.select("#sample-metadata");
-            
-         // empty the demographic info panel each time before getting new id info
+         // Empty the demographic panel
            demographicInfo.html("");
     
-         // grab the necessary demographic data data for the id and append the info to the panel
+         // Get demoographic data and append it.
             Object.entries(result).forEach((key) => {   
                 demographicInfo.append("h5").text(key[0].toUpperCase() + ": " + key[1] + "\n");    
             });
         });
     }
-    // create the function for the change event
+    // Create function for changing ids.
     function optionChanged(id) {
         getPlots(id);
         getDemoInfo(id);
     }
     
-    // create the function for the initial data rendering
+    // Create funtion for initial data rendering
     function init() {
-        // select dropdown menu 
+        // Select from dropdown menu.
         var dropdown = d3.select("#selDataset");
-    
-        // read the data 
+        // Read data file.
         d3.json("samples.json").then((data)=> {
             console.log(data)
-    
-            // get the id data to the dropdwown menu
+            // Grab metadata.
             data.names.forEach(function(name) {
                 dropdown.append("option").text(name).property("value");
             });
     
-            // call the functions to display the data and the plots to the page
+            // Use functions to display data.
             getPlots(data.names[0]);
             getDemoInfo(data.names[0]);
         });
